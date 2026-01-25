@@ -1,0 +1,53 @@
+// ==UserScript==
+// @name         VSaaS - CCC
+// @namespace    http://tampermonkey.net/
+// @version      1.2
+// @description  Al seleccionar una alerta copia automáticamente el código de cámara al portapapeles.
+// @author       hypr-lupo
+// @license      MIT
+// @match        https://suite.vsaas.ai/*
+// @match        https://suite-back.vsaas.ai/*
+// @grant        GM_setClipboard
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    let ultimoCodigo = null;
+
+    function extraerCodigo(texto) {
+        if (!texto || !texto.includes('|')) return null;
+        return texto.split('|').pop().trim();
+    }
+
+    function observarH3() {
+        const h3 = document.querySelector('h3.ng-binding');
+        if (!h3) return;
+
+        const observer = new MutationObserver(() => {
+            const texto = h3.innerText.trim();
+            const codigo = extraerCodigo(texto);
+
+            if (codigo && codigo !== ultimoCodigo) {
+                ultimoCodigo = codigo;
+                GM_setClipboard(codigo);
+                console.log('Código copiado:', codigo);
+            }
+        });
+
+        observer.observe(h3, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
+
+    // Esperar a que Angular renderice
+    const waitForH3 = setInterval(() => {
+        if (document.querySelector('h3.ng-binding')) {
+            clearInterval(waitForH3);
+            observarH3();
+            console.log('Tampermonkey activo');
+        }
+    }, 500);
+})();
