@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         VSaaS - CCC
 // @namespace    http://tampermonkey.net/
-// @version      1.4
-// @description  Al seleccionar una alerta copia automáticamente el código de cámara al portapapeles. además de cambiar el nombre de la pestaña
+// @version      1.5
+// @description  Copia código de cámara, ajusta título por destacamento y permite abrir imagen con tecla W.
 // @author       hypr-lupo
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
@@ -17,7 +17,7 @@
     let ultimoDestacamento = null;
 
     // -------------------------------------------------
-    // MAPA DE DESTACAMENTOS (DEFINITIVO)
+    // MAPA DE DESTACAMENTOS
     // -------------------------------------------------
     const DESTACAMENTOS = {
         'SAN CARLOS': 'CS3 - San Carlos',
@@ -77,7 +77,7 @@
     }
 
     // -------------------------------------------------
-    // OBSERVAR CAMBIO DE ALERTA (H3)
+    // OBSERVAR CAMBIO DE ALERTA
     // -------------------------------------------------
     function observarH3() {
         const h3 = document.querySelector('h3.ng-binding');
@@ -98,6 +98,7 @@
 
             if (destacamento && destacamento !== ultimoDestacamento) {
                 ultimoDestacamento = destacamento;
+                console.log('[VSaaS CCC] Destacamento:', destacamento);
                 actualizar = true;
             }
 
@@ -114,7 +115,47 @@
     }
 
     // -------------------------------------------------
-    // ESPERAR A QUE ANGULAR RENDERICE
+    // DETECTAR SI EL USUARIO ESTÁ ESCRIBIENDO
+    // -------------------------------------------------
+    function usuarioEscribiendo() {
+        const el = document.activeElement;
+        if (!el) return false;
+
+        return (
+            el.tagName === 'INPUT' ||
+            el.tagName === 'TEXTAREA' ||
+            el.isContentEditable === true
+        );
+    }
+
+    // -------------------------------------------------
+    // ABRIR IMAGEN DE ALERTA (TECLA W)
+    // -------------------------------------------------
+    function abrirImagenAlerta() {
+        const linkImagen = document.querySelector(
+            'a[href*="/api/sensors/"][href*="/download/"][target="_blank"]'
+        );
+
+        if (linkImagen && linkImagen.href) {
+            linkImagen.click();
+            console.log('[VSaaS CCC] Imagen abierta con tecla W');
+        }
+    }
+
+    // -------------------------------------------------
+    // ATAJO DE TECLADO
+    // -------------------------------------------------
+    document.addEventListener('keydown', (e) => {
+        if (e.repeat) return;
+        if (e.key.toLowerCase() !== 'w') return;
+
+        if (usuarioEscribiendo()) return;
+
+        abrirImagenAlerta();
+    });
+
+    // -------------------------------------------------
+    // ESPERAR A ANGULAR
     // -------------------------------------------------
     const waitForH3 = setInterval(() => {
         if (document.querySelector('h3.ng-binding')) {
@@ -125,4 +166,3 @@
     }, 500);
 
 })();
-
