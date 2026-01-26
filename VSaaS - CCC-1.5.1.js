@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         VSaaS - CCC
 // @namespace    http://tampermonkey.net/
-// @version      1.5
-// @description  Copia código de cámara, ajusta título por destacamento y permite abrir imagen con tecla W.
+// @version      1.5.1
+// @description  Copia código de cámara, ajusta título por destacamento y abre imagen con tecla W.
 // @author       hypr-lupo
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
@@ -69,10 +69,8 @@
     // -------------------------------------------------
     function actualizarTitulo(destacamento, codigo) {
         const partes = [];
-
         if (destacamento) partes.push(destacamento);
         if (codigo) partes.push(codigo);
-
         document.title = partes.length ? partes.join(' | ') : 'VSaaS';
     }
 
@@ -129,6 +127,21 @@
     }
 
     // -------------------------------------------------
+    // DETECTAR FOCO EN DROPDOWN (UI-SELECT / SELECT2)
+    // -------------------------------------------------
+    function focoEnDropdown() {
+        const el = document.activeElement;
+        if (!el) return false;
+
+        return (
+            el.closest('.ui-select-container') ||
+            el.closest('.select2-container') ||
+            el.classList.contains('select2-choice') ||
+            el.getAttribute('aria-label') === 'Select box select'
+        );
+    }
+
+    // -------------------------------------------------
     // ABRIR IMAGEN DE ALERTA (TECLA W)
     // -------------------------------------------------
     function abrirImagenAlerta() {
@@ -150,6 +163,7 @@
         if (e.key.toLowerCase() !== 'w') return;
 
         if (usuarioEscribiendo()) return;
+        if (focoEnDropdown()) return;
 
         abrirImagenAlerta();
     });
