@@ -2,6 +2,7 @@ D0 (delta-cero).
 
 VSaaS - CCC: Copiador de Códigos de Cámara
 
+Scarper de datos de VSaaS
 
 Sistema de Pings en el lugar!, georeferenciar puntos especificos de lugar.
     Coordenadas globales?
