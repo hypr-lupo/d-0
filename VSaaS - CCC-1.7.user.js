@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         VSaaS - CCC
 // @namespace    http://tampermonkey.net/
-// @version      1.6.2
-// @description  Copia código de cámara, ajusta título por destacamento y abre imagen con tecla W.
+// @version      1.7
+// @description  Copia código de cámara, ajusta título de pestaña por destacamento, abre imagen con W y navega con A/D.
 // @author       hypr-lupo
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
@@ -185,14 +185,44 @@
     }
 
     // -------------------------------------------------
-    // ATAJO DE TECLADO (W)
+    // NAVEGAR IMÁGENES (A / D)
+    // -------------------------------------------------
+    function navegarImagen(direccion) {
+        const selector = direccion === 'left' ? 'a.prev' : 'a.next';
+        const flecha = document.querySelector(selector);
+
+        if (!flecha) return;
+        if (flecha.classList.contains('disabled')) return;
+
+        flecha.click();
+
+        console.log(
+            `[VSaaS CCC] Imagen ${direccion === 'left' ? 'anterior' : 'siguiente'}`
+        );
+    }
+
+    // -------------------------------------------------
+    // ATAJOS DE TECLADO (W / A / D)
     // -------------------------------------------------
     document.addEventListener('keydown', (e) => {
-        if (e.repeat || e.key.toLowerCase() !== 'w') return;
+        if (e.repeat) return;
+
+        const key = e.key.toLowerCase();
+
         if (usuarioBloqueandoAtajo()) return;
         if (dropdownAbierto()) return;
 
-        abrirImagenAlerta();
+        if (key === 'w') {
+            abrirImagenAlerta();
+        }
+
+        if (key === 'a') {
+            navegarImagen('left');
+        }
+
+        if (key === 'd') {
+            navegarImagen('right');
+        }
     });
 
     // -------------------------------------------------
