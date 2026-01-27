@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VSaaS - CCC
 // @namespace    http://tampermonkey.net/
-// @version      1.5.1
+// @version      1.6.1
 // @description  Copia código de cámara, ajusta título por destacamento y abre imagen con tecla W.
 // @author       hypr-lupo
 // @license      MIT
@@ -15,6 +15,7 @@
 
     let ultimoCodigo = null;
     let ultimoDestacamento = null;
+    let observerActivo = false;
 
     // -------------------------------------------------
     // MAPA DE DESTACAMENTOS
@@ -28,22 +29,23 @@
         'CENTRO CIVICO': 'CS6 - El Golf'
     };
 
+    const CLAVES_DESTACAMENTOS = Object.keys(DESTACAMENTOS);
+
     // -------------------------------------------------
     // EXTRAER CÓDIGO DE CÁMARA
     // -------------------------------------------------
     function extraerCodigoDesdeH3(h3) {
-        if (!h3) return null;
-
-        const fuente = h3.getAttribute('title') || h3.innerText || '';
+        const fuente = h3?.getAttribute('title') || h3?.innerText || '';
         const match = fuente.match(/\b[A-Z0-9]{2,10}-\d{1,3}\b/);
-
-        return match ? match[0] : null;
+        return match?.[0] || null;
     }
 
     // -------------------------------------------------
-    // OBTENER DESTACAMENTO DESDE BREADCRUMB
+    // OBTENER DESTACAMENTO (con cache)
     // -------------------------------------------------
     function obtenerDestacamento() {
+        if (ultimoDestacamento) return ultimoDestacamento;
+
         const enlaces = document.querySelectorAll('a.ng-binding');
 
         for (const a of enlaces) {
@@ -55,7 +57,7 @@
 
             if (!texto) continue;
 
-            for (const clave in DESTACAMENTOS) {
+            for (const clave of CLAVES_DESTACAMENTOS) {
                 if (texto.includes(clave)) {
                     return DESTACAMENTOS[clave];
                 }
@@ -65,12 +67,12 @@
     }
 
     // -------------------------------------------------
-    // ACTUALIZAR TÍTULO DE LA PESTAÑA
+    // ACTUALIZAR TÍTULO
     // -------------------------------------------------
-    function actualizarTitulo(destacamento, codigo) {
+    function actualizarTitulo() {
         const partes = [];
-        if (destacamento) partes.push(destacamento);
-        if (codigo) partes.push(codigo);
+        if (ultimoDestacamento) partes.push(ultimoDestacamento);
+        if (ultimoCodigo) partes.push(ultimoCodigo);
         document.title = partes.length ? partes.join(' | ') : 'VSaaS';
     }
 
@@ -78,31 +80,32 @@
     // OBSERVAR CAMBIO DE ALERTA
     // -------------------------------------------------
     function observarH3() {
+        if (observerActivo) return;
+
         const h3 = document.querySelector('h3.ng-binding');
         if (!h3) return;
 
+        observerActivo = true;
+
         const observer = new MutationObserver(() => {
+            let cambio = false;
+
             const codigo = extraerCodigoDesdeH3(h3);
-            const destacamento = obtenerDestacamento();
-
-            let actualizar = false;
-
             if (codigo && codigo !== ultimoCodigo) {
                 ultimoCodigo = codigo;
                 GM_setClipboard(codigo);
                 console.log('[VSaaS CCC] Código copiado:', codigo);
-                actualizar = true;
+                cambio = true;
             }
 
+            const destacamento = obtenerDestacamento();
             if (destacamento && destacamento !== ultimoDestacamento) {
                 ultimoDestacamento = destacamento;
                 console.log('[VSaaS CCC] Destacamento:', destacamento);
-                actualizar = true;
+                cambio = true;
             }
 
-            if (actualizar) {
-                actualizarTitulo(ultimoDestacamento, ultimoCodigo);
-            }
+            if (cambio) actualizarTitulo();
         });
 
         observer.observe(h3, {
@@ -113,57 +116,80 @@
     }
 
     // -------------------------------------------------
-    // DETECTAR SI EL USUARIO ESTÁ ESCRIBIENDO
+    // DROPDOWN: ¿ESTÁ REALMENTE ABIERTO?
     // -------------------------------------------------
-    function usuarioEscribiendo() {
+    function dropdownAbierto() {
+        const el = document.activeElement;
+        if (!el) return false;
+
+        const contenedor =
+            el.closest('.ui-select-container') ||
+            el.closest('.select2-container');
+
+        if (!contenedor) return false;
+
+        return (
+            contenedor.classList.contains('open') ||
+            contenedor.classList.contains('ui-select-open') ||
+            contenedor.classList.contains('select2-container--open') ||
+            contenedor.getAttribute('aria-expanded') === 'true'
+        );
+    }
+
+    // -------------------------------------------------
+    // LIBERAR FOCO TRAS USAR DROPDOWN
+    // -------------------------------------------------
+    function liberarFocoSiDropdown() {
+        const el = document.activeElement;
+        if (!el) return;
+
+        if (
+            el.closest('.ui-select-container') ||
+            el.closest('.select2-container')
+        ) {
+            el.blur();
+            document.body.focus();
+        }
+    }
+
+    document.addEventListener('click', () => {
+        setTimeout(liberarFocoSiDropdown, 0);
+    }, true);
+
+    // -------------------------------------------------
+    // BLOQUEO GENERAL DE ATAJO
+    // -------------------------------------------------
+    function usuarioBloqueandoAtajo() {
         const el = document.activeElement;
         if (!el) return false;
 
         return (
             el.tagName === 'INPUT' ||
             el.tagName === 'TEXTAREA' ||
-            el.isContentEditable === true
+            el.isContentEditable
         );
     }
 
     // -------------------------------------------------
-    // DETECTAR FOCO EN DROPDOWN (UI-SELECT / SELECT2)
-    // -------------------------------------------------
-    function focoEnDropdown() {
-        const el = document.activeElement;
-        if (!el) return false;
-
-        return (
-            el.closest('.ui-select-container') ||
-            el.closest('.select2-container') ||
-            el.classList.contains('select2-choice') ||
-            el.getAttribute('aria-label') === 'Select box select'
-        );
-    }
-
-    // -------------------------------------------------
-    // ABRIR IMAGEN DE ALERTA (TECLA W)
+    // ABRIR IMAGEN
     // -------------------------------------------------
     function abrirImagenAlerta() {
-        const linkImagen = document.querySelector(
+        const link = document.querySelector(
             'a[href*="/api/sensors/"][href*="/download/"][target="_blank"]'
         );
-
-        if (linkImagen && linkImagen.href) {
-            linkImagen.click();
+        if (link?.href) {
+            link.click();
             console.log('[VSaaS CCC] Imagen abierta con tecla W');
         }
     }
 
     // -------------------------------------------------
-    // ATAJO DE TECLADO
+    // ATAJO DE TECLADO (W)
     // -------------------------------------------------
     document.addEventListener('keydown', (e) => {
-        if (e.repeat) return;
-        if (e.key.toLowerCase() !== 'w') return;
-
-        if (usuarioEscribiendo()) return;
-        if (focoEnDropdown()) return;
+        if (e.repeat || e.key.toLowerCase() !== 'w') return;
+        if (usuarioBloqueandoAtajo()) return;
+        if (dropdownAbierto()) return;
 
         abrirImagenAlerta();
     });
