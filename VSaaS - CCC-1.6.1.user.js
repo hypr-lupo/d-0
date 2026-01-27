@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VSaaS - CCC
 // @namespace    http://tampermonkey.net/
-// @version      1.6.1
+// @version      1.6.2
 // @description  Copia código de cámara, ajusta título por destacamento y abre imagen con tecla W.
 // @author       hypr-lupo
 // @license      MIT
@@ -26,7 +26,8 @@
         'FLEMING': 'CS4 - Fleming',
         'APOQUINDO': 'CS5 - Apoquindo',
         'QUINCHAMALI': 'CS1 - Quinchamalí',
-        'CENTRO CIVICO': 'CS6 - El Golf'
+        'CENTRO CIVICO': 'CS6 - El Golf',
+        'ANALITICA GENERAL': 'ANAL GENERAL'
     };
 
     const CLAVES_DESTACAMENTOS = Object.keys(DESTACAMENTOS);
