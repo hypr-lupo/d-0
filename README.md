@@ -1,7 +1,17 @@
 D0 (delta-cero).
 
-VSaaS - CCC: Copiador de Códigos de Cámara
+VSaaS - CCC: Copiador de Códigos de Cámara  
+
+
 VSaaS - S: Sinnovedador
+
+- Optimizar código
+- afinar detector de S, no activarse al SN ya en el lugar
+- agregar comentario
+- multi S para varias opciones
+- agregar Falso positivo con la F
+- posible doble S para montar hikcentral
+
 
 Scarper de datos de VSaaS
   fracaso a absoluto
