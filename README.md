@@ -8,6 +8,8 @@ VSaaS - S: Sinnovedador
 - Optimizar código
 - afinar detector de S, no activarse al SN ya en el lugar
 - agregar comentario
+- detectar comentario y cambiarlo en función del Estado
+- aplicar comentario al cambiar la alerta?
 - multi S para varias opciones
 - agregar Falso positivo con la F
 - posible doble S para montar hikcentral
