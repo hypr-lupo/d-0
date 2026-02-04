@@ -3,7 +3,7 @@ D0 (delta-cero).
 - Varios userscript's para VSaaS
 - Pendiente: ordenar Gestión de Datos y HikCentral
 
-
+=== VSaaS userscripts ===  
 VSaaS - CCC: Copiador de Códigos de Cámara  
 - Funciona óptimamente
 
@@ -17,27 +17,22 @@ VSaaS - S: Sinnovedador
 - agregar Falso positivo con la F
 - posible doble S para montar hikcentral
 
-
 VSaaS - Modo Ultra  
 - sólo imagen y opciones de estado
 - para su uso solo en casos de alta intensidad operativa
-- 
 
+=== HikCentral ===  
+o ¿cómo intervenir en el programa sin vulnerarlo?  
+daemon por python, posible sobrecarga en el equipo.
 
-
-
+=== DEMENCIAS ===  
+GESTIÓN DE DATOS - GDT  
 Scarper de datos de VSaaS  
 - fracaso a absoluto
 - necesito mas dominio sobre el sitio
-
-
-
-=== DEMENCIAS ===  
-
-
-GESTIÓN DE DATOS - GDT
-GDT1: establecer secuencialidad de turnos en funcion de una fecha de inicio
-GDT2: definir con precision que seccion se encarga de los destacamentos en cada turno especifico
+---
+GDT1: establecer secuencialidad de turnos en funcion de una fecha de inicio  
+GDT2: definir con precision que seccion se encarga de los destacamentos en cada turno especifico  
 GDT3: caracterizar cada turno en función de elementos comunes  
     dia de semana o no
     localiz destacamento
