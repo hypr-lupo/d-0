@@ -1,6 +1,7 @@
 D0 (delta-cero).
 
 VSaaS - CCC: Copiador de Códigos de Cámara
+VSaaS - S: Sinnovedador
 
 Scarper de datos de VSaaS
   fracaso a absoluto
