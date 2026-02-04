@@ -56,19 +56,11 @@ GDT6: finalmente desglosar bonito (tableau)
     horas peak y manejo de funcionarios
     anomalias en horas peak
     indice cecoco
-    cámaras más/menos relevantes
+    cámaras más/menos relevantes   
 
-
-
-
-
-
-
-
-
-Sistema de Pings en el lugar!, georeferenciar puntos especificos de lugar.
-    Coordenadas globales?
-    puntos especificos?
+=== Proyectos Posteriores ===  
+- Mapa de las cámaras  
+- Sistema de pings  
 
 
 
