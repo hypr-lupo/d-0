@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         VSaaS - SF
 // @namespace    http://tampermonkey.net/
-// @version      1.7
-// @description  S = SIN NOVEDAD | F = FALSOPOS + F.POSITIVO (Aceptar → aplica comentario)
+// @version      1.8
+// @description  S = SIN NOVEDAD | F = F.POSITIVO (Aceptar → FALSOPOS + Enviar)
 // @author       hypr-lupo
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
@@ -20,16 +20,16 @@
         's': {
             codigo: '-2)',
             nombre: 'SIN NOVEDAD',
-            comentarioPrevio: null
+            comentarioAlConfirmar: null
         },
         'f': {
             codigo: '-5)',
             nombre: 'F.POSITIVO',
-            comentarioPrevio: 'FALSOPOS'
+            comentarioAlConfirmar: 'FALSOPOS'
         }
     };
 
-    // Variable para rastrear si hay un comentario pendiente
+    // Variable para rastrear el comentario pendiente
     let comentarioPendiente = null;
 
     // Cache del componente para evitar búsquedas repetidas
@@ -91,7 +91,7 @@
     }
 
     // -------------------------------------------------
-    // SELECCIONAR COMENTARIO PREDEFINIDO (SIN ENVIAR)
+    // SELECCIONAR COMENTARIO PREDEFINIDO
     // -------------------------------------------------
     async function seleccionarComentario(textoComentario) {
         // Buscar el label del comentario predefinido
@@ -110,7 +110,7 @@
             return false;
         }
 
-        console.log(`[Comentario] Click en "${textoComentario}"`);
+        console.log(`[Comentario] Seleccionando "${textoComentario}"`);
         ejecutarClick(labelEncontrado);
 
         // Espera para que Angular actualice el textarea
@@ -122,7 +122,7 @@
     // -------------------------------------------------
     // APLICAR COMENTARIO (CLICK EN ENVIAR)
     // -------------------------------------------------
-    function aplicarComentario() {
+    async function aplicarComentario() {
         // Buscar el botón "Enviar"
         const botonEnviar = document.querySelector('.input-group-btn button[ng-click*="addComment"]');
 
@@ -137,10 +137,42 @@
             return false;
         }
 
-        console.log('[Comentario] Aplicando comentario...');
+        console.log('[Comentario] Enviando comentario...');
         ejecutarClick(botonEnviar);
 
+        await new Promise(r => setTimeout(r, 100));
+
         return true;
+    }
+
+    // -------------------------------------------------
+    // PROCESAR COMENTARIO AL CONFIRMAR POPUP
+    // -------------------------------------------------
+    async function procesarComentarioAlConfirmar() {
+        if (!comentarioPendiente) return;
+
+        console.log('[Popup] Usuario confirmó → Procesando comentario');
+
+        // 1. Seleccionar el comentario
+        const seleccionado = await seleccionarComentario(comentarioPendiente);
+
+        if (!seleccionado) {
+            console.error('[Comentario] ✗ No se pudo seleccionar');
+            comentarioPendiente = null;
+            return;
+        }
+
+        // 2. Enviar el comentario
+        const enviado = await aplicarComentario();
+
+        if (enviado) {
+            console.log('[Comentario] ✓ Comentario aplicado exitosamente');
+        } else {
+            console.error('[Comentario] ✗ No se pudo enviar');
+        }
+
+        // 3. Limpiar el comentario pendiente
+        comentarioPendiente = null;
     }
 
     // -------------------------------------------------
@@ -164,13 +196,10 @@
 
                     // El usuario hizo click en Aceptar
                     if (comentarioPendiente) {
-                        console.log('[Popup] Usuario confirmó → Aplicando comentario');
-
-                        // Pequeña espera para que el popup procese
+                        // Esperar a que el popup se cierre antes de procesar
                         setTimeout(() => {
-                            aplicarComentario();
-                            comentarioPendiente = null;
-                        }, 200);
+                            procesarComentarioAlConfirmar();
+                        }, 300);
                     }
                     break;
                 }
@@ -200,14 +229,10 @@
             return;
         }
 
-        // 3. Si tiene comentario previo, seleccionarlo (pero NO enviar)
-        if (config.comentarioPrevio) {
-            const comentarioExitoso = await seleccionarComentario(config.comentarioPrevio);
-            if (comentarioExitoso) {
-                // Marcar que hay un comentario pendiente de aplicar
-                comentarioPendiente = config.comentarioPrevio;
-                console.log(`[Comentario] Pendiente de aplicar al confirmar popup`);
-            }
+        // 3. Si tiene comentario para después del popup, guardarlo
+        if (config.comentarioAlConfirmar) {
+            comentarioPendiente = config.comentarioAlConfirmar;
+            console.log(`[${config.codigo}] Comentario "${comentarioPendiente}" pendiente de confirmación`);
         }
 
         // 4. Abrir dropdown
@@ -245,8 +270,8 @@
         const tiempo = (performance.now() - startTime).toFixed(0);
         console.log(`[${config.codigo}] ✓ Estado cambiado (${tiempo}ms)`);
 
-        if (config.comentarioPrevio) {
-            console.log(`[${config.codigo}] ⏳ Esperando confirmación del popup...`);
+        if (config.comentarioAlConfirmar) {
+            console.log(`[${config.codigo}] ⏳ Popup aparecerá → Presiona "Aceptar" para aplicar comentario`);
         }
     }
 
@@ -270,8 +295,8 @@
     // -------------------------------------------------
     configurarListenerPopup();
 
-    console.log('%c[Estados] v3.4 ACTIVO ✓', 'color: #4CAF50; font-weight: bold');
-    console.log('[Estados] S → SIN NOVEDAD | F → FALSOPOS + F.POSITIVO');
-    console.log('[Estados] Al presionar "Aceptar" en popup → se aplica comentario automáticamente');
+    console.log('%c[Estados] v3.5 ACTIVO ✓', 'color: #4CAF50; font-weight: bold');
+    console.log('[Estados] S → SIN NOVEDAD');
+    console.log('[Estados] F → F.POSITIVO → Popup → Aceptar → FALSOPOS aplicado');
 
 })();
