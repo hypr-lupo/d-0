@@ -1,7 +1,7 @@
 D0 (delta-cero).  
 - Optimizador laboral de funciones de operador de seguridad de la municipalidad de las condes
 - Varios userscript's para VSaaS
-- Pendiente: ordenar Gestión de Datos y HikCentral
+- Pendiente: ordenar Gestión de Datos, análisis de HikCentral y posible manejo de CECOCO
 
 === VSaaS userscripts ===  
 VSaaS - CCC: Copiador de Códigos de Cámara  
@@ -56,6 +56,6 @@ GDT6: finalmente desglosar bonito (tableau)
 === Proyectos Posteriores ===  
 - Mapa de las cámaras  
 - Sistema de pings  
-
+- CECOCO
 
 
