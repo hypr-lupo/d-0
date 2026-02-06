@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         SOGA
 // @namespace    http://tampermonkey.net/
-// @version      1
+// @version      1.1
 // @description  CCC (W/A/D) + Estados Rápidos (S/F) | Consolidado
-// @author       Leonardo Javier Navarro Bustos
+// @author       hypr-lupo
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
 // @match        https://suite-back.vsaas.ai/*
