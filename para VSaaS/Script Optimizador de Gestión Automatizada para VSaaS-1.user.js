@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Script Optimizador de Gestión Automatizada para VSaaS
+// @name         SOGA
 // @namespace    http://tampermonkey.net/
 // @version      1
 // @description  CCC (W/A/D) + Estados Rápidos (S/F) | Consolidado
