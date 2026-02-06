@@ -1,14 +1,29 @@
 // ==UserScript==
 // @name         SOGA
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  CCC (W/A/D) + Estados Rápidos (S/F) | Consolidado
-// @author       hypr-lupo
+// @version      2.1
+// @description  Script Optimizador de Gestión Automatizada para VSaaS | W/A/D + S/F/Q
+// @author       Leonardo Navarro (hypr-lupo)
+// @copyright    2025-2026 Leonardo Navarro
 // @license      MIT
 // @match        https://suite.vsaas.ai/*
 // @match        https://suite-back.vsaas.ai/*
 // @grant        GM_setClipboard
 // ==/UserScript==
+
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * SOGA - VSaaS Productivity Suite
+ * Copyright (c) 2026-2027 Leonardo Navarro
+ *
+ * Script Optimizador de Gestión Automatizada para VSaaS.
+ *
+ * Licensed under MIT License
+ *
+ * AVISO: Si usas este código, por favor mantén este aviso de
+ * copyright y considera contribuir mejoras de vuelta a la comunidad.
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 (function () {
     'use strict';
@@ -99,14 +114,14 @@
             if (codigo && codigo !== ultimoCodigo) {
                 ultimoCodigo = codigo;
                 GM_setClipboard(codigo);
-                console.log('[VSaaS CCC] Código copiado:', codigo);
+                console.log('[SOGA] Código copiado:', codigo);
                 cambio = true;
             }
 
             const destacamento = obtenerDestacamento();
             if (destacamento && destacamento !== ultimoDestacamento) {
                 ultimoDestacamento = destacamento;
-                console.log('[VSaaS CCC] Destacamento:', destacamento);
+                console.log('[SOGA] Destacamento:', destacamento);
                 cambio = true;
             }
 
@@ -129,7 +144,7 @@
         );
         if (link?.href) {
             link.click();
-            console.log('[VSaaS CCC] Imagen abierta con tecla W');
+            console.log('[SOGA] Imagen abierta con tecla W');
         }
     }
 
@@ -146,7 +161,7 @@
         flecha.click();
 
         console.log(
-            `[VSaaS CCC] Imagen ${direccion === 'left' ? 'anterior' : 'siguiente'}`
+            `[SOGA] Imagen ${direccion === 'left' ? 'anterior' : 'siguiente'}`
         );
     }
 
@@ -167,6 +182,11 @@
             codigo: '-5)',
             nombre: 'F.POSITIVO',
             comentarioAlConfirmar: 'FALSOPOS'
+        },
+        'q': {
+            codigo: '-3)',
+            nombre: 'HIKCENTRAL',
+            comentarioAlConfirmar: 'HIKCENTRAL'
         }
     };
 
@@ -524,12 +544,12 @@
 
     // Configurar listener de popup para Estados
     configurarListenerPopup();
-
     // Log de inicialización
-    console.log('%c[VSaaS Suite] v4.0 ACTIVO ✓', 'color: #4CAF50; font-weight: bold; font-size: 14px');
-    console.log('[VSaaS Suite] ─────────────────────────────────────');
-    console.log('[VSaaS Suite] CCC:     W → Abrir imagen | A/D → Navegar');
-    console.log('[VSaaS Suite] Estados: S → SIN NOVEDAD  | F → F.POSITIVO');
-    console.log('[VSaaS Suite] ─────────────────────────────────────');
+    console.log('%c[SOGA] v2.1 ACTIVO ✓', 'color: #4CAF50; font-weight: bold; font-size: 14px');
+    console.log('[SOGA] ════════════════════════════════════════════');
+    console.log('[SOGA] CCC:     W → Abrir imagen | A/D → Navegar');
+    console.log('[SOGA] Estados: S → SIN NOVEDAD  | F → F.POSITIVO');
+    console.log('[SOGA]          Q → HIKCENTRAL');
+    console.log('[SOGA] ════════════════════════════════════════════');
 
 })();
